@@ -45,6 +45,7 @@ var admin = false #Дает читы как в полигоне
 var IsInBackrooms = false #Для закулисья
 var IsAlreadyDied = false #Для счетчика смертей
 var IsInLib = false #Нужна для того, чтобы там работала книжка
+
 #Движения всякие
 var speed = Global.speed
 var DashSpeed = 2000
@@ -52,6 +53,7 @@ var base_gravity = 1200
 var jump_force = 600
 var fast_fall_gravity_multiplier = 1.5
 var isknockbacking = false
+
 #Эм, это... Это.
 var shift_pressed := false
 var shift_pressed_time := 0.0
@@ -61,6 +63,7 @@ var ShiftClick = false
 var HitstoppingNow = false
 var hitstopdur = 0
 var DPM = 0
+
 #Овердрайв!
 var BladePoint1 = Vector2.ZERO #Используется для следов от рывков 
 var BladePoint2 = Vector2.ZERO
@@ -69,6 +72,7 @@ var OVERDRIVE_TYPE = 1 #Тип оружия
 var energy := 128 #Мне некуда было запихнуть саму энергию, пускай туточке будет
 var GOD_MODE = false
 var OVERLOAD := 0
+
 #Музыка!
 var music = Global.music
 var AlreadyPlaying2 = false
@@ -81,12 +85,19 @@ var CoreReg = true
 var NotRegening = true
 var MusicPack = Global.MusicPack
 var CoreCounter := 0
+var rng = RandomNumberGenerator.new()
+var Whooshes = [1, 2, 3]
+
+
 #А туточке всякие загрузки и пути
-var Book = preload("res://Scenes/∞/BOOK.tscn")
-var CORE = preload("res://Scenes/CORE.tscn")
-var Rodger = preload("res://Scenes/ReRodger.tscn")
-var Hack = preload("res://Scenes/Hack.tscn")
-var TechnoZen = preload("res://Scenes/TechnoZen.tscn")
+var Whoosh1 = preload("res://Sounds/MC/Whoosh1.wav") #Звук взмаха мечом 
+var Whoosh2 = preload("res://Sounds/MC/Whoosh2.wav") #Звук взмаха мечом 
+var Whoosh3 = preload("res://Sounds/MC/Whoosh3.wav") #Звук взмаха мечом 
+var Book = preload("res://Scenes/∞/BOOK.tscn") #Книга в библиотеке
+var CORE = preload("res://Scenes/CORE.tscn") #Ядро
+var Rodger = preload("res://Scenes/ReRodger.tscn") #Роджер для спавна
+var Hack = preload("res://Scenes/Hack.tscn") #Хэк для спавна
+var TechnoZen = preload("res://Scenes/TechnoZen.tscn") #Техно для спавна
 var NeonThingy = preload("res://Scenes/MC/NeonThingy.tscn")
 var TEST_THINGY = preload("res://Scenes/NeonGG.tscn")
 @onready var EnergyIcon = get_parent().get_parent().get_parent().get_parent().get_parent().get_node("SubViewportContainer2/SubViewport/UI/UI")
@@ -213,7 +224,6 @@ func _physics_process(delta):
 		velocity.y = -jump_force
 		isjumping = true
 	move_and_slide()
-	global_position = global_position.round()
 	if velocity == Vector2.ZERO and not AttackArea.attacking and not isdashing:
 		$AnimationPlayer.play("Idle")
 	elif velocity.x < 0 and is_on_floor() and not AttackArea.attacking:
@@ -238,8 +248,8 @@ func _input(event):
 			var NEWCORE = CORE.instantiate()
 			get_parent().get_parent().add_child(NEWCORE)
 			NEWCORE.global_position = global_position
-			NEWCORE.get_node("RigidBody2D").MC = self
-			NEWCORE.get_node("RigidBody2D").linear_velocity += velocity / 2
+			NEWCORE.get_node("Core").MC = self
+			NEWCORE.get_node("Core").linear_velocity += velocity / 2
 			CoreReg = false
 			if not GOD_MODE:
 				CoreCounter += 1 
@@ -262,6 +272,8 @@ func _input(event):
 			collision_layer = 1
 	if event is InputEventKey and event.keycode == KEY_2 and admin:
 		if not event.pressed:
+			if get_parent().get_parent().has_method("new_enemy"):
+				get_parent().get_parent().new_enemy()
 			var NewHack = Hack.instantiate()
 			get_parent().get_parent().add_child(NewHack)	
 			NewHack.global_position = get_global_mouse_position()
@@ -273,6 +285,8 @@ func _input(event):
 			NewTest.global_position = get_global_mouse_position()
 	if event is InputEventKey and event.keycode == KEY_4 and admin:
 		if not event.pressed:
+			if get_parent().get_parent().has_method("new_enemy"):
+				get_parent().get_parent().new_enemy()
 			var NewTechnoZen = TechnoZen.instantiate()
 			get_parent().get_parent().add_child(NewTechnoZen)
 			NewTechnoZen.global_position = get_global_mouse_position()
@@ -288,6 +302,8 @@ func _input(event):
 				GOD_MODE = true
 	if event is InputEventKey and event.keycode == KEY_3 and admin:
 		if not event.pressed:
+			if get_parent().get_parent().has_method("new_enemy"):
+				get_parent().get_parent().new_enemy()
 			var NewRodger = Rodger.instantiate()
 			get_parent().get_parent().add_child(NewRodger)
 			NewRodger.global_position = get_global_mouse_position()
@@ -395,6 +411,10 @@ func overdose():
 	EnReg = false
 	update_energy()
 func OverdriveRift():
+	#Рот болит 
+	#И попе больно
+	#Разрабом быть 
+	#Вполне прикольно
 	var NewNeonThingy = NeonThingy.instantiate()
 	get_parent().get_parent().add_child(NewNeonThingy)
 	var NeonShapeCast = NewNeonThingy.get_node("ShapeCast2D")
@@ -456,22 +476,28 @@ func update_energy():
 		EnergyLable.text = str(energy).pad_zeros(3)
 		if energy <= 0:
 			EnergyIcon.play("0")
-		elif energy <= 32:
-			EnergyIcon.play("32")
-		elif energy <= 64:
-			EnergyIcon.play("64")
-		elif energy <= 96:
-			EnergyIcon.play("96")
-		elif energy <= 128:
-			EnergyIcon.play("128")
-		elif energy <= 160:
-			EnergyIcon.play("160")
-		elif energy <= 192:
-			EnergyIcon.play("192")
-		elif energy <= 224:
-			EnergyIcon.play("224")
-		elif energy <= 256:
+		elif energy > 224:
 			EnergyIcon.play("256")
+		elif energy > 192:
+			EnergyIcon.play("224")
+		elif energy > 160:
+			EnergyIcon.play("192")
+		elif energy > 128:
+			EnergyIcon.play("160")
+		elif energy > 96:
+			EnergyIcon.play("128")
+		elif energy > 64:
+			EnergyIcon.play("96")
+		elif energy > 32:
+			EnergyIcon.play("64")
+		elif energy > 0:
+			EnergyIcon.play("32")
+
+
+
+
+
+
 		energy = clamp(energy, 0, 256)
 	var EnergyButWithZeros = str(energy).pad_zeros(3)
 	var FirstNumUwU = EnergyButWithZeros.substr(0, 1)
@@ -492,7 +518,8 @@ func die():
 	velocity. x = 0
 	velocity.y = 0
 	jump_force = 0
-	$"ПервыйПлеер".pitch_scale = 0.2
+	$"ПервыйПлеер".pitch_scale = lerp($"ПервыйПлеер".pitch_scale, 0.0, 0.02)
+	Engine.time_scale = lerp($"ПервыйПлеер".pitch_scale, 0.0, 0.02)
 	if IsAlreadyDied == false:
 		IsAlreadyDied = true
 		var Deaths = Save.get_value("~NUMBERS~", "YourselfKilled", ) + 1
@@ -580,6 +607,10 @@ func hit():
 	$Area2D.attacking = true
 	print('Произошол тролленг')
 	$AnimationPlayer.play("Attack")
+	rng.randomize()
+	Whooshes = [Whoosh1, Whoosh2]
+	var Sound = Whooshes[rng.randi() % Whooshes.size()]
+	$Whoosh.stream = Sound
 	$Whoosh.pitch_scale = randf_range(0.7, 1.3)
 	$Whoosh.play()
 func OVERDRIVE():

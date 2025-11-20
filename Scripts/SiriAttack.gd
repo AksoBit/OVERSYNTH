@@ -3,31 +3,13 @@ var attacking = false
 var parrying = false
 var Dir = Vector2.ZERO
 var OverDamage
+
 @onready var BG = $"../../../../../../ColorRect"
 @onready var UI = $"../../../../../../SubViewportContainer2"
+#Мне очень нравится читать свои комментарии из прошлого. Привет, Бит из будущего! 
 func _on_body_entered(body):
 	if parrying:
-		if body.has_method('parry') and body.Parriable:	
-			if body.has_method('Impact') and 42 == 80085: #Зарезервированно 
-				body.Impact(true, false)
-				BG.visible = true
-				UI.visible = false
-				$"../AnimatedSprite2D".material.set_shader_parameter("Flashing", true)
-				$"../AnimatedSprite2D".material.set_shader_parameter("White", true)
-				BG.material.set_shader_parameter("White", false)
-				$"../../../TileMap".material.set_shader_parameter("Flashing", true)
-				$"../../../TileMap".material.set_shader_parameter("White", true)
-				await(get_tree().create_timer(0.05, true, false, true).timeout)
-				$"../AnimatedSprite2D".material.set_shader_parameter("White", false)
-				body.Impact(false, false)
-				BG.material.set_shader_parameter("White", true)
-				$"../../../TileMap".material.set_shader_parameter(	"White", false)
-				await(get_tree().create_timer(0.05, true, false, true).timeout)
-				body.Impact(true, true)
-				$"../../../TileMap".material.set_shader_parameter("Flashing", false)
-				$"../AnimatedSprite2D".material.set_shader_parameter("Flashing", false)
-				BG.visible = false
-				UI.visible = true
+		if body.has_method('parry') and body.parriable:	
 			$"../Parry".pitch_scale = randf_range(0.7, 1.3)
 			$"../Parry".play()
 			var ThingyPos = get_global_mouse_position()
@@ -60,7 +42,6 @@ func _on_body_entered(body):
 			OverDamage = 2.8
 		else:
 			OverDamage = 3
-		$"../Hit".pitch_scale = randf_range(0.7, 1.3)
 		$"../Hit".play()
 		if not $"..".OVERDRIVEN:
 			body.take_damage(int(5 * OverDamage), 0, 0, "Siri")
@@ -76,6 +57,29 @@ func _on_body_entered(body):
 		$"../Hit".pitch_scale = randf_range(0.7, 1.3)
 		$"../Hit".play()
 		body.DESTROY()
+	if body.name == "Core" and 42 == 80085:
+		if body != null:
+			body.Impact(true, false)
+		BG.visible = true
+		UI.visible = false
+		$"../Animations".material.set_shader_parameter("Flashing", true)
+		$"../Animations".material.set_shader_parameter("White", true)
+		BG.material.set_shader_parameter("White", false)
+		$"../../../TileMap".material.set_shader_parameter("Flashing", true)
+		$"../../../TileMap".material.set_shader_parameter("White", true)
+		await(get_tree().create_timer(0.05, true, false, true).timeout)
+		$"../Animations".material.set_shader_parameter("White", false)
+		if body != null:
+			body.Impact(false, false)
+		BG.material.set_shader_parameter("White", true)
+		$"../../../TileMap".material.set_shader_parameter(	"White", false)
+		await(get_tree().create_timer(0.05, true, false, true).timeout)
+		if body != null:
+			body.Impact(true, true)
+		$"../../../TileMap".material.set_shader_parameter("Flashing", false)
+		$"../Animations".material.set_shader_parameter("Flashing", false)
+		BG.visible = false
+		UI.visible = true
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if attacking == true:
 		attacking = false

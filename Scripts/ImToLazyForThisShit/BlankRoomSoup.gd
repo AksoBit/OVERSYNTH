@@ -254,6 +254,6 @@ func _ready() -> void:
 	get_parent().get_node("UwUGG/UwUGG").calm_down()
 	if Save.get_value("~NUMBERS~", "BestLibScore", ) < RoomInd:
 		Save.set_value("~NUMBERS~", "BestLibScore", RoomInd )
-# Called every frame. 'delta' is the elapsed time since the previous frame.
+# Called every frame. 'delta' is thev elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

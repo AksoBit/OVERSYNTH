@@ -1,3 +1,5 @@
+#В этом коде есть корни, синусы и косинусы. При этом это просто глупенький Роджер.
+#✋😐🤚 абсолютный кинотеатр
 extends CharacterBody2D
 
 @onready var GG = get_parent().get_parent().get_node("UwUGG/UwUGG")
@@ -14,8 +16,7 @@ var energy = 25
 var fell = false
 var AlreadyFellTimerStarted = false
 var Activated = false
-var DONT_FUCKING_DARE = false
-var Parriable = false
+var parriable = false
 var is_falling = false
 var IsOnSomeone = false
 var Someone 
@@ -51,7 +52,7 @@ func _physics_process(delta: float) -> void:
 			is_attaking = false
 			is_falling = false
 			is_rotating = false
-			Parriable = false
+			parriable = false
 			AlreadyFellTimerStarted = true
 			for i in 100:
 				if !is_on_floor():
@@ -113,7 +114,7 @@ func _on_jump_range_body_entered(body: Node2D):
 func _on_attack_area_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage") and not body == $".":
 		is_attaking = true
-	if body.has_method("take_damage") and not IsOnSomeone and (Parriable or BeliveHeCanFLy) and not body == $".":
+	if body.has_method("take_damage") and not IsOnSomeone and (parriable or BeliveHeCanFLy) and not body == $".":
 		if body.name == "UwUGG" or BeliveHeCanFLy:
 			print($"..".name, " прицепился к ", body.name)
 			Someone = body
@@ -126,7 +127,7 @@ func _on_attack_area_body_entered(body: Node2D) -> void:
 				for i in 50:
 					if not IsOnSomeone and not BREAK:
 						break
-					Parriable = true
+					parriable = true
 					print($"..".name, ' кускус')
 					if Someone == null:
 						break
@@ -142,7 +143,7 @@ func _on_attack_area_body_entered(body: Node2D) -> void:
 				for i in 30:
 					if not IsOnSomeone and not BREAK:
 						break
-					Parriable = true
+					parriable = true
 					print($"..".name, ' кускус')
 					if Someone == null:
 						break
@@ -172,14 +173,14 @@ func die():
 	Global.RoDeath()
 	queue_free()
 func parry(Dir):
-	if Parriable:
+	if parriable:
 		global_rotation = 0
 		rotation = 0
 		collision_layer = (1 << 2)
 		await get_tree().create_timer(0.01).timeout 
 		BeliveHeCanFLy = true
 		print('+parry')
-		Parriable = false
+		parriable = false
 		is_attaking = false
 		IsOnSomeone = false
 		velocity = Dir
@@ -195,7 +196,7 @@ func activate():
 		Activated = true
 func jump():
 		print($"..".name, ' прыгает')
-		Parriable = true
+		parriable = true
 		var target_height = GG.global_position.y
 		var current_height = global_position.y
 		if target_height >= current_height:

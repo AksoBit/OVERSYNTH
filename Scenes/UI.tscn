@@ -88,7 +88,7 @@ region = Rect2(1225, 0, 175, 84)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n04ve"]
 atlas = ExtResource("4_xjg7p")
-region = Rect2(1225, 0, 175, 84)
+region = Rect2(1400, 0, 175, 84)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wi7yl"]
 atlas = ExtResource("4_xjg7p")
@@ -474,7 +474,7 @@ wait_time = 5.0
 [node name="UI" type="AnimatedSprite2D" parent="."]
 position = Vector2(92.5, 33)
 sprite_frames = SubResource("SpriteFrames_48q88")
-animation = &"OVERDRIVE"
+animation = &"256"
 
 [node name="OverheatThingy" type="Sprite2D" parent="UI"]
 show_behind_parent = true

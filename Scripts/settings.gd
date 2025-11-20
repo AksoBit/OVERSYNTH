@@ -1,12 +1,9 @@
 extends Node
 
 var config = ConfigFile.new()
-var path = "user://logs/settings.cfg"
-
+var path = "user://settings.cfg"
+var Version = "1.3.4"
 func _ready():
-	load_settings()
-
-func load_settings():
 	if config.load(path) != OK:
 		set_value("~SOUND~", "Global", 50 )
 		set_value("~SOUND~", "SFX", 50 )
@@ -21,14 +18,67 @@ func load_settings():
 		set_value("~GRAPHICS~", "Blur", 0.3)
 		set_value("~GRAPHICS~", "Scanlines", 0.1)
 		set_value("~GAMEPLAY~", "Debug", false)
-		save_settings()
-
-func save_settings():
-	config.save(path)
-
-func get_value(section, key, default = null):
-	return config.get_value(section, key, default)
+		set_value("~SYSTEM~", "Version", Version)
+		config.save(path)
+	if config.get_value("~SYSTEM~", "Version") != Version:
+		Save.hey_ive_got_an_update()
+		print("Оп оп, обнова")
+		if get_value("~SOUND~", "Global") != null:
+			set_value("~SOUND~", "Global", get_value("~SOUND~", "Global"))
+		else:
+			set_value("~SOUND~", "Global", 50 )
+		if get_value("~SOUND~", "SFX") != null:
+			set_value("~SOUND~", "SFX", get_value("~SOUND~", "SFX"))
+		else:
+			set_value("~SOUND~", "SFX", 50 )
+		if get_value("~SOUND~", "Voice") != null:
+			set_value("~SOUND~", "Voice", get_value("~SOUND~", "Voice"))
+		else:
+			set_value("~SOUND~", "Voice", 50 )
+		if get_value("~SOUND~", "Music") != null:
+			set_value("~SOUND~", "Music", get_value("~SOUND~", "Music"))
+		else:
+			set_value("~SOUND~", "Music", 50 )
+		if get_value("~SOUND~", "Speed") != null:
+			set_value("~SOUND~", "Speed", get_value("~SOUND~", "Speed"))
+		else:
+			set_value("~SOUND~", "Speed", 100 )
+		if get_value("~SOUND~", "Overdrum") != null:
+			set_value("~SOUND~", "Overdrum", get_value("~SOUND~", "Overdrum"))
+		else:
+			set_value("~SOUND~", "Overdrum", false)
+		if get_value("~GRAPHICS~", "VSYNC") != null:
+			set_value("~GRAPHICS~", "VSYNC", get_value("~GRAPHICS~", "VSYNC"))
+		else:
+			set_value("~GRAPHICS~", "VSYNC", true)
+		if get_value("~GRAPHICS~", "CRT") != null:
+			set_value("~GRAPHICS~", "CRT", get_value("~GRAPHICS~", "CRT"))
+		else:
+			set_value("~GRAPHICS~", "CRT", false)
+		if get_value("~GRAPHICS~", "Curvature") != null:
+			set_value("~GRAPHICS~", "Curvature", get_value("~GRAPHICS~", "Curvature"))
+		else:
+			set_value("~GRAPHICS~", "Curvature", 7.0)
+		if get_value("~GRAPHICS~", "Vingette multiplyer") != null:
+			set_value("~GRAPHICS~", "Vingette multiplyer", get_value("~GRAPHICS~", "Vingette multiplyer"))
+		else:
+			set_value("~GRAPHICS~", "Vingette multiplyer", 0.25)
+		if get_value("~GRAPHICS~", "Blur") != null:
+			set_value("~GRAPHICS~", "Blur", get_value("~GRAPHICS~", "Blur"))
+		else:
+			set_value("~GRAPHICS~", "Blur", 0.3)
+		if get_value("~GRAPHICS~", "Scanlines") != null:
+			set_value("~GRAPHICS~", "Scanlines", get_value("~GRAPHICS~", "Scanlines"))
+		else:
+			set_value("~GRAPHICS~", "Scanlines", 0.1)
+		if get_value("~GAMEPLAY~", "Debug") != null:
+			set_value("~GAMEPLAY~", "Debug", get_value("~GAMEPLAY~", "Debug"))
+		else:
+			set_value("~GAMEPLAY~", "Debug", false)
+		set_value("~SYSTEM~", "Version", Version)
+func get_value(section, key):
+	return config.get_value(section, key)
 
 func set_value(section, key, value):
 	config.set_value(section, key, value)
-	save_settings()
+	config.save(path)

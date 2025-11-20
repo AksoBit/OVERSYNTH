@@ -1,5 +1,5 @@
 extends RigidBody2D
-var Parriable = true
+var parriable = true
 var Damage = 10
 var FirstDot
 var SeconDot
@@ -40,7 +40,7 @@ func  _process(delta: float) -> void:
 		var body = CoolRay.get_collider()
 		if body.has_method("take_damage") and not body.name == "UwUGG":
 			body.take_damage(Damage, 0, 0, "Core")
-			if Parriable == false:
+			if parriable == false:
 				MC.take_overheat(5)
 				MC.DPM += Damage
 				MC.transfer_to_text_panel("CANON", false, Color.from_rgba8(254, 244, 55, 255), Color.from_rgba8(0, 0, 0, 255))
@@ -74,7 +74,7 @@ func _on_area_2d_2_body_entered(body: Node2D) -> void:
 		return
 	else:
 		if body.has_method("take_damage") and not body.name == "UwUGG":
-			if Parriable == false:
+			if parriable == false:
 				MC.take_overheat(5)
 				MC.transfer_to_text_panel("CANON", false, Color.from_rgba8(254, 244, 55, 255), Color.from_rgba8(0, 0, 0, 255))
 				MC.DPM += Damage
@@ -89,12 +89,19 @@ func _on_area_2d_2_body_entered(body: Node2D) -> void:
 		CoreParts.global_position = global_position - Correction
 		queue_free()
 func parry(Dir):
-	if Parriable == true:
+	if parriable == true:
 		Endtimer = int(Time.get_ticks_msec())
-		$"../Area2D/CoreParry".pitch_scale = randf_range(0.9, 1.1)
-		$"../Area2D/CoreParry".play()
 		var TiMulti = Endtimer - Startimer
 		linear_velocity = Dir * 3
 		Damage = Damage + (TiMulti / 100)
 		print('+parry')
-		Parriable = false
+		parriable = false
+func Impact(BW, Finish):
+	if Finish:
+		material.set_shader_parameter("Flashing", false)
+	else:
+		material.set_shader_parameter("Flashing", true)
+	if BW == true:
+		material.set_shader_parameter("White", true)
+	else:
+		material.set_shader_parameter("White", false)

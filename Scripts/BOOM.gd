@@ -17,10 +17,10 @@ func _on_body_entered(body: Node2D) -> void:
 			body.DESTROY()
 	
 func DESTROY():
-	MC = $"../RigidBody2D".MC
+	MC = $"../Core".MC
 	$CorExplosion.pitch_scale = randf_range(0.7, 1.3)
 	$CorExplosion.play()
 	$CollisionShape2D2/AnimatedSprite2D.play("default")
-	damage = $"../RigidBody2D".Damage
+	damage = $"../Core".Damage
 func _on_animated_sprite_2d_animation_finished() -> void:
 	get_parent().queue_free()

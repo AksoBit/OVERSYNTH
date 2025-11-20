@@ -144,6 +144,7 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
 	pass # Replace with function body.
+	#^^Этот чел так и не replaced pass with function body/
 
 func activate():
 	print(name, " активирован")

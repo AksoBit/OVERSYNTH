@@ -1,5 +1,6 @@
 extends Sprite2D
 var page = [] #Эта хрень называется массив.
+#Это я из будущего. Нахрена ты сказал это? Все И ТАК ЗНАЮТ что это называется массив.
 var PageNow = 0
 func _ready() -> void:
 	for i in range(411): 
